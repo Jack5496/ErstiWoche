@@ -31,7 +31,7 @@ public class MenuHandler {
 
 		fps.label = Gdx.graphics.getFramesPerSecond() + "";
 //		fps.render(batch);
-		logo.render(batch);
+//		logo.render(batch);
 	}
 
 	public static void mouseMoved(int x, int y) {

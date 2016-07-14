@@ -21,13 +21,13 @@ public class LocalPlayerHandler {
 	public static void openPlayerNameInput(byte result) {
 		InputName listener = new InputName();
 
-		String extraMessage = "Your Username";
+		String extraMessage = "Enter Password";
 
 		if (result == WarpResponseResultCode.AUTH_ERROR) {
-			extraMessage = "Already taken";
+			extraMessage = "Already logged in";
 		}
 		if (result == WarpResponseResultCode.UNKNOWN_ERROR) {
-			extraMessage = "We need a Username";
+			extraMessage = "Unknown Error";
 		}
 		
 		Gdx.input.getTextInput(listener, extraMessage, "");

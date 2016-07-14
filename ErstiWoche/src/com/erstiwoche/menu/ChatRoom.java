@@ -19,13 +19,13 @@ import com.shephertz.app42.gaming.multiplayer.client.events.RoomData;
 public class ChatRoom implements MenuInterface {
 
 	List<GUIButton> buttons;
-	GUIButton back = new GUIButton("Back", "test", 0, 0, 0, 0);
+	GUIButton back = new GUIButton("Back", "exit", 0, 0, 0, 0);
 	GUIButton activButton;
 
-	static GUIButton answer = new GUIButton("", null, 0, 0, 0, 0);
-	static GUIButton question = new GUIButton("", null, 0, 0, 0, 0);
+	static GUIButton answer = new GUIButton("", "chat", 0, 0, 0, 0);
+	static GUIButton question = new GUIButton("", "student", 0, 0, 0, 0);
 	
-	public GUIButton chat = new GUIButton("Chat", "test", 0, 0, 0, 0);
+	public GUIButton chat = new GUIButton("Chat", "openChat", 0, 0, 0, 0);
 	
 	public static String QUESTIONTAG = "Q";
 	public static String ANSWERTAG = "A";
@@ -57,7 +57,10 @@ public class ChatRoom implements MenuInterface {
 	public void enter() {
 		if (activButton != null) {
 			if (activButton == back) {
-				Notifications.changed.get(room.id).remove(Notifications.CHATUPDATE);
+				List<String> not = Notifications.changed.get(room.id);
+				if(not!=null){
+					not.remove(Notifications.CHATUPDATE);
+				}
 				MenuHandler.setActivMenu(room);
 			}
 			if (activButton == chat) {

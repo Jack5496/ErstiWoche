@@ -9,22 +9,7 @@ public class LocalPlayer{
 	
 	public LocalPlayer(String name) {
 		this.name = name;
-		handCards = new ArrayList<String>();
 	}
-	
-	public void takeCard(String card){
-		handCards.add(card);
-	}
-	
-	public String getCard(int pos){
-		return handCards.get(pos);
-	}
-	
-	public String removeCard(){
-		return handCards.remove(0);
-	}
-	
-	public List<String> handCards;
 	
 	@Override
 	public boolean equals(Object obj) {

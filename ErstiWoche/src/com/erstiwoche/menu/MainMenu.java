@@ -44,7 +44,7 @@ public class MainMenu implements MenuInterface {
 			float ypos = i % rowAmount * height + height / 2;
 
 			if (i < roomIDs.size()) {
-				GUIButton playerButton = new GUIButton("Loading", "test", xpos, ypos, width, height)
+				GUIButton playerButton = new GUIButton("Loading", "loading", xpos, ypos, width, height)
 						.setOnHoverBigger(true);
 				roomButtons.put(roomIDs.get(i), playerButton);
 				Multiplayer.updateRoomInformations(roomIDs.get(i));
@@ -54,7 +54,7 @@ public class MainMenu implements MenuInterface {
 
 			}
 			if (buttonAmount - 1 == i) {
-				adminButton = new GUIButton("Admin Menu", "test", xpos, ypos, width, height).setOnHoverBigger(true);
+				adminButton = new GUIButton("Admin Menu", "key", xpos, ypos, width, height).setOnHoverBigger(true);
 				roomButtons.put(adminButton.label, adminButton);
 			}
 		}
@@ -64,6 +64,7 @@ public class MainMenu implements MenuInterface {
 		GUIButton button = roomButtons.get(id);
 		if (button != null) {
 			button.label = name;
+			button.texture = "station";
 		}
 	}
 

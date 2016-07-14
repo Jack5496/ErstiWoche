@@ -56,7 +56,10 @@ public class Bier implements MenuInterface {
 	public void enter() {
 		if (activButton != null) {
 			if (activButton == back) {
-				Notifications.changed.get(room.id).remove(Notifications.BIERUPDATE);
+				List<String> not = Notifications.changed.get(room.id);
+				if(not!=null){
+					not.remove(Notifications.BIERUPDATE);
+				}
 				MenuHandler.setActivMenu(room);
 			}
 			else{

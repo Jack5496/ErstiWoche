@@ -7,6 +7,7 @@ import com.erstiwoche.Main;
 public class DesktopLauncher {
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
+		
 		cfg.title = "ErstiWoche";
 		cfg.useGL20 = false;
 		cfg.width = 480;

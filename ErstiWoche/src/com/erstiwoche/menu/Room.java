@@ -26,10 +26,12 @@ public class Room implements MenuInterface {
 
 	public List<LocalPlayer> players;
 
-	GUIButton giveTeamPoints = new GUIButton("Give Team Points", "test", 80, 80, 20, 20).setOnHoverBigger(true);
-	GUIButton bier = new GUIButton(Bier.class.getSimpleName(), "test", 80, 80, 20, 20).setOnHoverBigger(true);
-	GUIButton back = new GUIButton("Leave", "test", 30, 15, 20, 20).setOnHoverBigger(true);
-	GUIButton chat = new GUIButton("Chat Room", "test", 70, 15, 20, 20).setOnHoverBigger(true);
+	GUIButton giveTeamPoints = new GUIButton("Give Team Points", "setPoints", 80, 80, 20, 20).setOnHoverBigger(true);
+	GUIButton bier = new GUIButton(Bier.class.getSimpleName(), "bier", 80, 80, 20, 20).setOnHoverBigger(true);
+	GUIButton chat = new GUIButton("Chat Room", "chat", 70, 15, 20, 20).setOnHoverBigger(true);
+	
+	GUIButton roomName;
+	GUIButton back = new GUIButton("Leave", "exit", 30, 15, 20, 20).setOnHoverBigger(true);
 
 	public Room(RoomData data) {
 		buttons = new ArrayList<GUIButton>();
@@ -37,12 +39,14 @@ public class Room implements MenuInterface {
 		porperties = new HashMap<String, Object>();
 
 		roomInformationsFound(data);
+		roomName = new GUIButton("Station:\n"+name, "station", 80, 80, 20, 20).setOnHoverBigger(true);
 		Multiplayer.updateRoomInformations(id);
 
 		buttons.add(chat);
 		buttons.add(bier);
 		buttons.add(giveTeamPoints);
 
+		buttons.add(roomName);
 		buttons.add(back);
 		buttons = MenuHandler.setButtonPositions(buttons);
 	}
@@ -112,7 +116,7 @@ public class Room implements MenuInterface {
 			if (activButton == bier) {
 				MenuHandler.setActivMenu(new Bier(this));
 			}
-			if (activButton == this.giveTeamPoints) {
+			if (activButton == giveTeamPoints) {
 				MenuHandler.setActivMenu(new ListeTeamsAuf());
 			}
 
@@ -128,7 +132,7 @@ public class Room implements MenuInterface {
 			ChatRoom.answer.label = "" + props.get(ChatRoom.ANSWERTAG);
 			ChatRoom.question.label = "" + props.get(ChatRoom.QUESTIONTAG);
 
-			bier.label = Bier.class.getSimpleName() + "\n" + props.get(Bier.class.getSimpleName());
+			bier.label = Bier.class.getSimpleName() + "Status: \n" + props.get(Bier.class.getSimpleName());
 		} else if (string.equals(Multiplayer.teamViewID)) {
 			Main.log(getClass(), "New Properties found");
 			Main.log(getClass(), properties.toString());

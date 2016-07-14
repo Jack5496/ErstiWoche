@@ -10,6 +10,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.TextInputListener;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.erstiwoche.Main;
+import com.erstiwoche.menu.TeamView.InputPoints;
 import com.erstiwoche.multiplayer.Multiplayer;
 import com.erstiwoche.uiElements.GUIButton;
 
@@ -19,11 +20,11 @@ public class ListeTeamsAuf implements MenuInterface {
 	public static List<String> teams;
 
 	static List<GUIButton> buttons;
-	static GUIButton back = new GUIButton("Back", "test", 0, 0, 0, 0);
+	static GUIButton back = new GUIButton("Back", "exit", 0, 0, 0, 0);
 	GUIButton activButton;
 
-	public static GUIButton addTeam = new GUIButton("Create Team", "test", 0, 0, 0, 0);
-	public static GUIButton deleteTeam = new GUIButton("Delete Team", "test", 0, 0, 0, 0);
+	public static GUIButton addTeam = new GUIButton("Create Team", "createTeam", 0, 0, 0, 0);
+	public static GUIButton deleteTeam = new GUIButton("Delete Team", "deleteTeam", 0, 0, 0, 0);
 
 	public ListeTeamsAuf() {
 		buttons = new ArrayList<GUIButton>();
@@ -32,7 +33,7 @@ public class ListeTeamsAuf implements MenuInterface {
 		updateButtons();
 		Multiplayer.updateRoomInformations(Multiplayer.teamViewID);
 	}
-	
+
 	public static HashMap<String, Object> props;
 
 	public static void recieveTeamListProperties(HashMap<String, Object> hashMap) {
@@ -54,35 +55,58 @@ public class ListeTeamsAuf implements MenuInterface {
 		updateButtons();
 		TeamView.updateButtons();
 	}
-	
-	public static HashMap<GUIButton,String> teamButtons = new HashMap<GUIButton, String>();
+
+	public static HashMap<GUIButton, String> teamButtons = new HashMap<GUIButton, String>();
 
 	public static void updateButtons() {
 		buttons = new ArrayList<GUIButton>();
 		teamButtons = new HashMap<GUIButton, String>();
 
 		for (String team : teams) {
-			GUIButton b = new GUIButton(team+"\nTotal: "+getTotalTeamPoints(team), "test", 0, 0, 0, 0);
+			String zusatzInfo = "";
+			GUIButton b = new GUIButton(team, "teamError", 0, 0, 0, 0);
+			if (Multiplayer.activRoom != null) {
+				zusatzInfo = "\n" + getPoints(team) + " Punkte";
+				b = new GUIButton(team + zusatzInfo, "teamSetPoints", 0, 0, 0, 0);
+			} else if (AdminMenu.isPlayerAdmin()) {
+				zusatzInfo = "\nTotal: " + getTotalTeamPoints(team);
+				b = new GUIButton(team + zusatzInfo, "teamView", 0, 0, 0, 0);
+			}
 			teamButtons.put(b, team);
 			buttons.add(b);
 		}
 
 		buttons.add(back);
 
-		if (AdminMenu.isPlayerAdmin()) {
-			buttons.add(addTeam);
-			buttons.add(deleteTeam);
+		if (Multiplayer.activRoom == null) {
+			if (AdminMenu.isPlayerAdmin()) {
+				buttons.add(addTeam);
+				buttons.add(deleteTeam);
+			}
 		}
+		
 		buttons = MenuHandler.setButtonPositions(buttons);
 	}
-	
+
+	public static int getPoints(String teamName) {
+		HashMap<String, Object> hashMap = ListeTeamsAuf.props;
+		int points = 0;
+		for (String key : hashMap.keySet()) {
+			if (key.contains(teamName) && key.contains(Multiplayer.activRoom.name)) {
+				int statPoint = Integer.parseInt((String) hashMap.get(key));
+				points += statPoint;
+			}
+		}
+		return points;
+	}
+
 	public static int getTotalTeamPoints(String teamName) {
 		HashMap<String, Object> hashMap = ListeTeamsAuf.props;
 		int points = 0;
 		for (String key : hashMap.keySet()) {
 			if (key.contains(teamName)) {
 				int statPoint = Integer.parseInt((String) hashMap.get(key));
-				points+=statPoint;
+				points += statPoint;
 			}
 		}
 		return points;
@@ -103,25 +127,27 @@ public class ListeTeamsAuf implements MenuInterface {
 				} else {
 					MenuHandler.setActivMenu(new MainMenu());
 				}
-			}
-			else if (activButton == addTeam) {
+			} else if (activButton == addTeam) {
 				Gdx.input.getTextInput(new CreateTeam(), "Enter Team Name", "");
-			}
-			else if (activButton == deleteTeam) {
+			} else if (activButton == deleteTeam) {
 				Gdx.input.getTextInput(new DeleteTeam(), "Enter Team Name", "");
+			} else {
+				if (Multiplayer.activRoom != null) {
+					Gdx.input.getTextInput(new InputPoints(teamButtons.get(activButton) + Multiplayer.activRoom.name),
+							"Trage Punkte Ein", "");
+				} else if (AdminMenu.isPlayerAdmin()) {
+					MenuHandler.setActivMenu(new TeamView(teamButtons.get(activButton)));
+				}
 			}
-			else{
-				MenuHandler.setActivMenu(new TeamView(teamButtons.get(activButton)));
-			}
-			
+
 		}
 	}
-	
+
 	public static void deleteTeamEntrys(String team) {
 		HashMap<String, Object> hashMap = ListeTeamsAuf.props;
 
 		Multiplayer.updateProp(Multiplayer.teamViewID, ListeTeamsAuf.TEAMLISTTAG, teams);
-		
+
 		List<String> keysToDelete = new ArrayList<String>();
 		for (String key : hashMap.keySet()) {
 			if (key.contains(team)) {
@@ -130,7 +156,7 @@ public class ListeTeamsAuf implements MenuInterface {
 		}
 		Multiplayer.deleteProp(Multiplayer.teamViewID, keysToDelete);
 	}
-	
+
 	public static class DeleteTeam implements TextInputListener {
 
 		@Override

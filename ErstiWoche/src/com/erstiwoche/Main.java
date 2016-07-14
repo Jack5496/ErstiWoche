@@ -44,9 +44,9 @@ public class Main implements ApplicationListener {
 		font.setColor(Color.BLACK);
 
 		initInputHandler();
-		
-		onlineConnector = new Multiplayer();
+
 		menuHandler = new MenuHandler();
+		onlineConnector = new Multiplayer();
 		goOnlineRandomName();
 	}
 	

@@ -2,34 +2,39 @@ package com.erstiwoche.menu;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.erstiwoche.Main;
-import com.erstiwoche.entitys.LocalPlayerHandler;
-import com.erstiwoche.multiplayer.Multiplayer;
 import com.erstiwoche.uiElements.GUIButton;
-import com.shephertz.app42.gaming.multiplayer.client.events.RoomData;
 
 public class LoginWaitMenu implements MenuInterface {
 
 	static List<GUIButton> buttons;
 	GUIButton activButton;
 
-	static GUIButton wait = new GUIButton("Please Wait", "test", 50, 50, 50, 50).setOnHoverBigger(true);
+	static GUIButton wait = new GUIButton("", "loading", 50, 50, 50, 50).setOnHoverBigger(true);
 	static GUIButton error = new GUIButton("Please Wait", "test", 50, 50, 50, 50).setOnHoverBigger(true);
 
+	float timeForCircle = 4;
+	
 	public LoginWaitMenu() {
 		buttons = new ArrayList<GUIButton>();
 		buttons.add(wait);
+		buttons = MenuHandler.setButtonPositions(buttons);
 	}
 
 	@Override
 	public void render(SpriteBatch batch) {
 		for (GUIButton button : buttons) {
+			button.setDegree(getDegreeForTime());
 			button.render(batch);
 		}
+	}
 
+	public float getDegreeForTime() {
+		long time = System.currentTimeMillis();
+		float mult = (time%60000)/1000f%timeForCircle/timeForCircle;
+//		float percentOfSecond = time%(1000);
+//		percentOfSecond/=1000;
+		return -mult*360;
 	}
 
 	public GUIButton getActivButton() {
@@ -40,6 +45,7 @@ public class LoginWaitMenu implements MenuInterface {
 		buttons.remove(wait);
 		error = new GUIButton(errorMessage + "\nReload", "test", 50, 50, 50, 50).setOnHoverBigger(true);
 		buttons.add(error);
+		buttons = MenuHandler.setButtonPositions(buttons);
 	}
 
 	public void enter() {
