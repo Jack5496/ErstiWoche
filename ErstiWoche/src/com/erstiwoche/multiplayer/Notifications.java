@@ -161,16 +161,6 @@ public class Notifications implements NotifyListener {
 	public void onUserJoinedRoom(RoomData arg0, String userName) {
 		// TODO Auto-generated method stub
 		Main.log(getClass(), "onUserJoinedRoom");
-
-		// sicher selber raum, einfach extra prüfung
-		if (Multiplayer.activRoom != null) {
-			if (Multiplayer.activRoom.id.equals(arg0.getId())) {
-				Multiplayer.activRoom.playerJoined(new LocalPlayer(userName));
-
-				Message m = new Message("System", arg0.getId(), userName + " joined");
-				addMessage(m);
-			}
-		}
 	}
 
 	@Override
@@ -183,13 +173,6 @@ public class Notifications implements NotifyListener {
 	public void onUserLeftRoom(RoomData arg0, String userName) {
 		// TODO Auto-generated method stub
 		Main.log(getClass(), "onUserLeftRoom");
-		if (Multiplayer.activRoom != null) {
-			if (Multiplayer.activRoom.id.equals(arg0.getId())) {
-				Multiplayer.activRoom.playerLeft(new LocalPlayer(userName));
-				Message m = new Message("System", arg0.getId(), userName + " left");
-				addMessage(m);
-			}
-		}
 	}
 
 	@Override

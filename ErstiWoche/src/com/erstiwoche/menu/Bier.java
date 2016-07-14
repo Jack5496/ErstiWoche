@@ -17,13 +17,13 @@ import com.shephertz.app42.gaming.multiplayer.client.events.RoomData;
 public class Bier implements MenuInterface {
 
 	List<GUIButton> buttons;
-	GUIButton back = new GUIButton("Back", "test", 0, 0, 0, 0);
+	GUIButton back = new GUIButton("Back", "exit", 0, 0, 0, 0);
 	GUIButton activButton;
 
-	public GUIButton genug = new GUIButton("Genug", "test", 0, 0, 0, 0);
-	public GUIButton zuWenig = new GUIButton("Zu Wenig", "test", 0, 0, 0, 0);
-	public GUIButton zuViel = new GUIButton("Zu Viel", "test", 0, 0, 0, 0);
-	public GUIButton aufdemWeg = new GUIButton("Wird geliefert", "test", 0, 0, 0, 0);
+	public GUIButton genug = new GUIButton("Genug", "bier", 0, 0, 0, 0);
+	public GUIButton zuWenig = new GUIButton("Zu Wenig", "bierZuWenig", 0, 0, 0, 0);
+	public GUIButton zuViel = new GUIButton("Zu Viel", "bier", 0, 0, 0, 0);
+	public GUIButton aufdemWeg = new GUIButton("Wird geliefert", "bierWirdGeliefert", 0, 0, 0, 0);
 	
 	public Room room;
 

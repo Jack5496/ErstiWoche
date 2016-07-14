@@ -44,10 +44,6 @@ public class GUIButton extends Button {
 
 		this.texture = buttonName;
 
-		if (texture != null) {
-			ResourceLoader.getInstance().addToLoad(buttonName);
-		}
-
 		this.hoverd = false;
 		this.change = false;
 	}
@@ -69,17 +65,17 @@ public class GUIButton extends Button {
 	public void setHovered(boolean hoverd) {
 		this.hoverd = hoverd;
 	}
-	
-	public void setDegree(float degree){
+
+	public void setDegree(float degree) {
 		degreeRotation = degree;
 	}
-	
+
 	public void setChange(boolean change) {
 		this.change = change;
 	}
 
 	public static float hoverSize = 5f;
-	
+
 	public float degreeRotation = 0;
 
 	public void render(SpriteBatch batch) {
@@ -87,14 +83,11 @@ public class GUIButton extends Button {
 		float ypos = (Main.getInstance().getHeight() * centerPercentY / 100);
 		float width = ((float) Main.getInstance().getWidth() * percentWidth / 100);
 		float height = ((float) Main.getInstance().getHeight() * percentHeight / 100);
-		
+
 		float labelHeight = getLabelTextHeight();
 
 		if (texture != null) {
 			Texture button = ResourceLoader.getInstance().getButton(texture);
-			if(change){
-				button = ResourceLoader.getInstance().getButton("new");
-			}
 
 			float percentWidth = this.percentWidth;
 			float percentHeight = this.percentHeight;
@@ -108,7 +101,7 @@ public class GUIButton extends Button {
 
 			width = ((float) Main.getInstance().getWidth() * percentWidth / 100);
 			height = ((float) Main.getInstance().getHeight() * percentHeight / 100);
-			height -=labelHeight;
+			height -= labelHeight;
 
 			float buttonRatioAspect = height / width;
 			float textureRatioAspect = ((float) button.getHeight()) / ((float) button.getWidth());
@@ -119,16 +112,24 @@ public class GUIButton extends Button {
 			} else { // breiter als hoch
 				height = width * textureRatioAspect;
 			}
-			
-			batch.draw(button, xpos - (width / 2), ypos - (height / 2)+labelHeight/2, width/2, (height)/2, width, height, 1f, 1f, degreeRotation, 1, 1, button.getWidth(), button.getHeight(), false, false);
-//			batch.draw(button, xpos - (width / 2), ypos - (height / 2)+labelHeight/2, width, height);
+
+			if (change) {
+				Texture update = ResourceLoader.getInstance().getButton("new");
+				batch.draw(update, xpos - (width / 2), ypos - (height / 2) + labelHeight / 2, width / 2, (height) / 2,
+						width, height, 1f, 1f, degreeRotation, 1, 1, update.getWidth(), update.getHeight(), false,
+						false);
+			}
+
+			batch.draw(button, xpos - (width / 2), ypos - (height / 2) + labelHeight / 2, width / 2, (height) / 2,
+					width, height, 1f, 1f, degreeRotation, 1, 1, button.getWidth(), button.getHeight(), false, false);
+
 		}
 
 		drawLabel(batch);
 
 	}
-	
-	public float getLabelTextHeight(){
+
+	public float getLabelTextHeight() {
 		String label = recalcLabelIfTooLong();
 		float labelHeight = font.getBounds(label).height;
 
@@ -140,8 +141,8 @@ public class GUIButton extends Button {
 			labelCopy = labelCopy.substring(index + 1);
 			index = labelCopy.indexOf("\n");
 		}
-		
-		return 2*labelHeight+ newLines * labelHeight;
+
+		return 2 * labelHeight + newLines * labelHeight;
 	}
 
 	public void drawLabel(SpriteBatch batch) {
@@ -152,7 +153,7 @@ public class GUIButton extends Button {
 		String label = recalcLabelIfTooLong();
 		float labelHeight = font.getBounds(label).height;
 
-		if (this.hoverd) {
+		if (this.hoverd || change) {
 			font.setColor(Color.RED);
 		}
 
@@ -167,9 +168,10 @@ public class GUIButton extends Button {
 			index = labelCopy.indexOf("\n");
 		}
 
-//		float yoffset = (labelHeight / 2);
-		
-		font.drawMultiLine(batch, label, xpos, ypos-height/2 + 2*labelHeight+ newLines * labelHeight, 0, alignment);
+		// float yoffset = (labelHeight / 2);
+
+		font.drawMultiLine(batch, label, xpos, ypos - height / 2 + 2 * labelHeight + newLines * labelHeight, 0,
+				alignment);
 		// wird
 		// nach
 		// unten

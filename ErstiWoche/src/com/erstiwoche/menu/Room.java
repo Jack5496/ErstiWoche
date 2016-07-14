@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.erstiwoche.Main;
+import com.erstiwoche.ResourceLoader;
 import com.erstiwoche.entitys.LocalPlayer;
 import com.erstiwoche.helper.Message;
 import com.erstiwoche.multiplayer.Multiplayer;
@@ -28,7 +31,8 @@ public class Room implements MenuInterface {
 
 	GUIButton giveTeamPoints = new GUIButton("Give Team Points", "setPoints", 80, 80, 20, 20).setOnHoverBigger(true);
 	GUIButton bier = new GUIButton(Bier.class.getSimpleName(), "bier", 80, 80, 20, 20).setOnHoverBigger(true);
-	GUIButton chat = new GUIButton("Chat Room", "chat", 70, 15, 20, 20).setOnHoverBigger(true);
+	GUIButton chat = new GUIButton("Chat Room", "chat", 70, 15, 20, 20).setOnHoverBigger(true);	
+	GUIButton stopuhr = new GUIButton("Stopuhr", "stopuhr", 70, 15, 20, 20).setOnHoverBigger(true);
 	
 	GUIButton roomName;
 	GUIButton back = new GUIButton("Leave", "exit", 30, 15, 20, 20).setOnHoverBigger(true);
@@ -45,6 +49,7 @@ public class Room implements MenuInterface {
 		buttons.add(chat);
 		buttons.add(bier);
 		buttons.add(giveTeamPoints);
+		buttons.add(stopuhr);
 
 		buttons.add(roomName);
 		buttons.add(back);
@@ -103,7 +108,6 @@ public class Room implements MenuInterface {
 	public void enter() {
 		if (activButton != null) {
 			if (activButton == back) {
-				// Main.log(getClass(), "Switching to Room Listning");
 				if (Notifications.changed.get(id) != null) {
 					Notifications.changed.remove(id);
 				}
@@ -115,6 +119,9 @@ public class Room implements MenuInterface {
 			}
 			if (activButton == bier) {
 				MenuHandler.setActivMenu(new Bier(this));
+			}
+			if (activButton == stopuhr) {
+				MenuHandler.setActivMenu(new Stopuhr(this));
 			}
 			if (activButton == giveTeamPoints) {
 				MenuHandler.setActivMenu(new ListeTeamsAuf());
@@ -133,6 +140,8 @@ public class Room implements MenuInterface {
 			ChatRoom.question.label = "" + props.get(ChatRoom.QUESTIONTAG);
 
 			bier.label = Bier.class.getSimpleName() + "Status: \n" + props.get(Bier.class.getSimpleName());
+			
+			Stopuhr.updateClocks(props);
 		} else if (string.equals(Multiplayer.teamViewID)) {
 			Main.log(getClass(), "New Properties found");
 			Main.log(getClass(), properties.toString());

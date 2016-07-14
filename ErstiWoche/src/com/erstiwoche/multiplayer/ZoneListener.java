@@ -41,7 +41,7 @@ public class ZoneListener implements ZoneRequestListener {
 
 	@Override
 	public void onGetAllRoomsDone(AllRoomsEvent arg0) {
-		List<String> rooms = Arrays.asList(arg0.getRoomIds());
+		List<String> rooms = new ArrayList<String>(Arrays.asList(arg0.getRoomIds()));
 		MainMenu.allRoomsRecieved(rooms);
 		Main.log(getClass(), "onGetAllRoomsDone");
 	}

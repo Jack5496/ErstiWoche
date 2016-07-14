@@ -7,6 +7,7 @@ import java.util.List;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.erstiwoche.Main;
 import com.erstiwoche.entitys.LocalPlayerHandler;
+import com.erstiwoche.helper.Umlaute;
 import com.erstiwoche.multiplayer.Multiplayer;
 import com.erstiwoche.multiplayer.Notifications;
 import com.erstiwoche.uiElements.GUIButton;
@@ -16,6 +17,8 @@ public class MainMenu implements MenuInterface {
 
 	GUIButton activButton;
 	static GUIButton adminButton;
+	static GUIButton teamViewButton;
+	static GUIButton createNewStation;
 
 	static HashMap<String, GUIButton> roomButtons;
 
@@ -28,7 +31,9 @@ public class MainMenu implements MenuInterface {
 	public static void allRoomsRecieved(List<String> roomIDs) {
 		roomButtons = new HashMap<String, GUIButton>();
 
-		int buttonAmount = roomIDs.size() + 1;
+		roomIDs.remove(Multiplayer.teamViewID);
+
+		int buttonAmount = roomIDs.size() + 2;
 
 		int rowAmount = (int) Math.sqrt(buttonAmount) + 1;
 		if (rowAmount == Math.sqrt(buttonAmount) + 1) {
@@ -53,18 +58,33 @@ public class MainMenu implements MenuInterface {
 				}
 
 			}
-			if (buttonAmount - 1 == i) {
-				adminButton = new GUIButton("Admin Menu", "key", xpos, ypos, width, height).setOnHoverBigger(true);
-				roomButtons.put(adminButton.label, adminButton);
+			if (buttonAmount - 2 == i) {
+				teamViewButton = new GUIButton("Team View", "listTeams", xpos, ypos, width, height)
+						.setOnHoverBigger(true);
+				roomButtons.put(Multiplayer.teamViewID, teamViewButton);
 			}
+			if (buttonAmount - 1 == i) {
+				if (AdminMenu.isPlayerAdmin()) {
+					createNewStation = new GUIButton("New Station", "newStation", xpos, ypos, width, height)
+							.setOnHoverBigger(true);
+					roomButtons.put(createNewStation.label, createNewStation);
+				} else {
+					adminButton = new GUIButton("Admin Menu", "key", xpos, ypos, width, height).setOnHoverBigger(true);
+					roomButtons.put(adminButton.label, adminButton);
+				}
+			}
+
 		}
 	}
 
 	public static void roomNameRecieved(String id, String name) {
-		GUIButton button = roomButtons.get(id);
-		if (button != null) {
-			button.label = name;
-			button.texture = "station";
+		if (!id.equals(Multiplayer.teamViewID)) {
+			GUIButton button = roomButtons.get(id);
+			if (button != null) {
+				button.label = Umlaute.rekonstruiere(name);								
+				button.texture = "station";
+
+			}
 		}
 	}
 
@@ -91,12 +111,10 @@ public class MainMenu implements MenuInterface {
 	public void enter() {
 		if (activButton != null) {
 			if (activButton == adminButton) {
-				if (AdminMenu.isPlayerAdmin()) {
-					// MenuHandler.setActivMenu(new AdminMenu());
-				} else {
-					Multiplayer.goOffline();
-					LocalPlayerHandler.openPlayerNameInput();
-				}
+				Multiplayer.goOffline();
+				LocalPlayerHandler.openPlayerNameInput();
+			} else if (activButton == createNewStation) {
+				
 			} else {
 				for (String roomID : roomButtons.keySet()) {
 					if (activButton == roomButtons.get(roomID)) {

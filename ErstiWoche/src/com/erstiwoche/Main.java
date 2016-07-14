@@ -4,6 +4,9 @@ import java.util.UUID;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -17,9 +20,9 @@ import com.erstiwoche.multiplayer.Multiplayer;
 import com.shephertz.app42.gaming.multiplayer.client.events.RoomData;
 
 public class Main implements ApplicationListener {
-	
+
 	public static final String gameTitle = "Ersti Woche";
-	
+
 	SpriteBatch batch;
 	BitmapFont font;
 	Texture img;
@@ -49,8 +52,8 @@ public class Main implements ApplicationListener {
 		onlineConnector = new Multiplayer();
 		goOnlineRandomName();
 	}
-	
-	public void goOnlineRandomName(){
+
+	public void goOnlineRandomName() {
 		LocalPlayerHandler.userNameWanted = UUID.randomUUID().toString().replace("-", "").substring(0, 7);
 		Multiplayer.goOnline(LocalPlayerHandler.userNameWanted);
 	}
@@ -107,6 +110,6 @@ public class Main implements ApplicationListener {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

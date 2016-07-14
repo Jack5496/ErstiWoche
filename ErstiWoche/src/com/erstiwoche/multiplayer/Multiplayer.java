@@ -16,7 +16,7 @@ public class Multiplayer {
 
 	private static ChatListener chatListener;
 	
-	public static String teamViewID = "1096573283";
+	public static String teamViewID = "18196153";
 
 	public static Room activRoom;
 

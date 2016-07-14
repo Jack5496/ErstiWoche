@@ -6,6 +6,7 @@ import java.util.List;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.TextInputListener;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.erstiwoche.helper.Umlaute;
 import com.erstiwoche.multiplayer.Multiplayer;
 import com.erstiwoche.uiElements.GUIButton;
 
@@ -13,6 +14,7 @@ public class TeamView implements MenuInterface {
 
 	static List<GUIButton> buttons;
 	static GUIButton back = new GUIButton("Back", "exit", 0, 0, 0, 0);
+	static GUIButton deleteTeam = new GUIButton("Delete Team", "deleteTeam", 0, 0, 0, 0);
 	GUIButton activButton;
 
 	static String team = "";
@@ -39,6 +41,10 @@ public class TeamView implements MenuInterface {
 			}
 		}
 
+		if (AdminMenu.isPlayerAdmin()) {
+			buttons.add(deleteTeam);
+		}
+
 		buttons.add(back);
 
 		buttons = MenuHandler.setButtonPositions(buttons);
@@ -56,9 +62,41 @@ public class TeamView implements MenuInterface {
 			if (activButton == back) {
 				MenuHandler.setActivMenu(new ListeTeamsAuf());
 			}
+			if (activButton == deleteTeam) {
+				Gdx.input.getTextInput(new DeleteTeam(team),
+						"Team: \"" + Umlaute.rekonstruiere(team) + "\" wirklick löschen?", "");
+			}
 			if (stationen.containsKey(activButton)) {
 				Gdx.input.getTextInput(new InputPoints(stationen.get(activButton)), "Trage Punkte Ein", "");
 			}
+		}
+	}
+
+	public static class DeleteTeam implements TextInputListener {
+
+		String deleteTeam;
+
+		public DeleteTeam(String text) {
+			this.deleteTeam = text;
+		}
+
+		@Override
+		public void input(String text) {
+			if (!(text.equalsIgnoreCase("no") || text.equalsIgnoreCase("nein"))) {
+
+				if (Multiplayer.activRoom != null) {
+					MenuHandler.setActivMenu(Multiplayer.activRoom);
+				} else {
+					MenuHandler.setActivMenu(new ListeTeamsAuf());
+				}
+
+				ListeTeamsAuf.deleteTeamEntrys(team);
+			}
+		}
+
+		@Override
+		public void canceled() {
+
 		}
 	}
 
@@ -73,14 +111,13 @@ public class TeamView implements MenuInterface {
 		@Override
 		public void input(String text) {
 			int punkte = 0;
-			try{
+			try {
 				punkte = Integer.parseInt(text);
-			}
-			catch(NumberFormatException e){
+			} catch (NumberFormatException e) {
 				punkte = 0;
 			}
-			
-			Multiplayer.updateProp(Multiplayer.teamViewID, stationKey, ""+punkte);
+
+			Multiplayer.updateProp(Multiplayer.teamViewID, stationKey, "" + punkte);
 		}
 
 		@Override

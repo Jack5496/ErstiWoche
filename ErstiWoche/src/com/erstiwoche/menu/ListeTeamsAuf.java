@@ -10,6 +10,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.TextInputListener;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.erstiwoche.Main;
+import com.erstiwoche.helper.Umlaute;
 import com.erstiwoche.menu.TeamView.InputPoints;
 import com.erstiwoche.multiplayer.Multiplayer;
 import com.erstiwoche.uiElements.GUIButton;
@@ -24,7 +25,6 @@ public class ListeTeamsAuf implements MenuInterface {
 	GUIButton activButton;
 
 	public static GUIButton addTeam = new GUIButton("Create Team", "createTeam", 0, 0, 0, 0);
-	public static GUIButton deleteTeam = new GUIButton("Delete Team", "deleteTeam", 0, 0, 0, 0);
 
 	public ListeTeamsAuf() {
 		buttons = new ArrayList<GUIButton>();
@@ -63,14 +63,20 @@ public class ListeTeamsAuf implements MenuInterface {
 		teamButtons = new HashMap<GUIButton, String>();
 
 		for (String team : teams) {
+
+			String teamName = Umlaute.rekonstruiere(team);
+
 			String zusatzInfo = "";
-			GUIButton b = new GUIButton(team, "teamError", 0, 0, 0, 0);
+			GUIButton b = new GUIButton(teamName, "teamError", 0, 0, 0, 0);
 			if (Multiplayer.activRoom != null) {
 				zusatzInfo = "\n" + getPoints(team) + " Punkte";
-				b = new GUIButton(team + zusatzInfo, "teamSetPoints", 0, 0, 0, 0);
+				b = new GUIButton(teamName + zusatzInfo, "teamSetPoints", 0, 0, 0, 0);
 			} else if (AdminMenu.isPlayerAdmin()) {
 				zusatzInfo = "\nTotal: " + getTotalTeamPoints(team);
-				b = new GUIButton(team + zusatzInfo, "teamView", 0, 0, 0, 0);
+				b = new GUIButton(teamName + zusatzInfo, "teamView", 0, 0, 0, 0);
+			} else{
+				zusatzInfo = "\nTotal: " + getTotalTeamPoints(team);
+				b = new GUIButton(teamName + zusatzInfo, "team", 0, 0, 0, 0);
 			}
 			teamButtons.put(b, team);
 			buttons.add(b);
@@ -81,10 +87,9 @@ public class ListeTeamsAuf implements MenuInterface {
 		if (Multiplayer.activRoom == null) {
 			if (AdminMenu.isPlayerAdmin()) {
 				buttons.add(addTeam);
-				buttons.add(deleteTeam);
 			}
 		}
-		
+
 		buttons = MenuHandler.setButtonPositions(buttons);
 	}
 
@@ -129,8 +134,6 @@ public class ListeTeamsAuf implements MenuInterface {
 				}
 			} else if (activButton == addTeam) {
 				Gdx.input.getTextInput(new CreateTeam(), "Enter Team Name", "");
-			} else if (activButton == deleteTeam) {
-				Gdx.input.getTextInput(new DeleteTeam(), "Enter Team Name", "");
 			} else {
 				if (Multiplayer.activRoom != null) {
 					Gdx.input.getTextInput(new InputPoints(teamButtons.get(activButton) + Multiplayer.activRoom.name),
@@ -157,24 +160,12 @@ public class ListeTeamsAuf implements MenuInterface {
 		Multiplayer.deleteProp(Multiplayer.teamViewID, keysToDelete);
 	}
 
-	public static class DeleteTeam implements TextInputListener {
-
-		@Override
-		public void input(String text) {
-			teams.remove(text);
-			deleteTeamEntrys(text);
-		}
-
-		@Override
-		public void canceled() {
-
-		}
-	}
-
 	public static class CreateTeam implements TextInputListener {
 
 		@Override
 		public void input(String text) {
+			text = Umlaute.macheSafe(text);
+
 			teams.remove(text);
 			teams.add(text);
 			Multiplayer.updateProp(Multiplayer.teamViewID, ListeTeamsAuf.TEAMLISTTAG, teams);
