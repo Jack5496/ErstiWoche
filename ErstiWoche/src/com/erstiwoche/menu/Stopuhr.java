@@ -3,16 +3,8 @@ package com.erstiwoche.menu;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
-
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.erstiwoche.Main;
-import com.erstiwoche.entitys.LocalPlayer;
-import com.erstiwoche.helper.Message;
 import com.erstiwoche.multiplayer.Multiplayer;
-import com.erstiwoche.multiplayer.Notifications;
 import com.erstiwoche.uiElements.GUIButton;
-import com.shephertz.app42.gaming.multiplayer.client.events.RoomData;
 
 public class Stopuhr implements MenuInterface {
 
@@ -60,19 +52,20 @@ public class Stopuhr implements MenuInterface {
 	}
 
 	@Override
-	public void render(SpriteBatch batch) {
+	public void renderCall() {
 		calcUhrLabel();
-		for (GUIButton button : buttons) {
-			button.render(batch);
-		}
+		MenuHandler.renderButtons(this,buttons);
 	}
 
 	public void enter() {
 		if (activButton != null) {
 			if (activButton == back) {
-				MenuHandler.setActivMenu(room);
+				MenuHandler.setActivMenu(room,false);
 			}
 			if (activButton == resetAll) {
+				pauseClock1();
+				pauseClock2();
+
 				resetClock(uhr1Name);
 				resetClock(uhr2Name);
 			}
@@ -86,14 +79,14 @@ public class Stopuhr implements MenuInterface {
 				if (uhr1stopped) {
 					unpauseClock1();
 				} else {
-					pauseClock(uhr1Name, uhr1runTime);
+					pauseClock1();
 				}
 			}
 			if (activButton == uhr2) {
 				if (uhr2stopped) {
 					unpauseClock2();
 				} else {
-					pauseClock(uhr2Name, uhr2runTime);
+					pauseClock1();
 				}
 			}
 		}
@@ -116,9 +109,9 @@ public class Stopuhr implements MenuInterface {
 		}
 
 		int minutesUhr1 = (int) (secondsUhr1 / 60);
-		String seconds = String.format("%.02f", secondsUhr1%60);
+		String seconds = String.format("%.02f", secondsUhr1 % 60);
 
-		uhr1.label = minutesUhr1 + "m " + seconds+" s";
+		uhr1.label = minutesUhr1 + "m " + seconds + " s";
 	}
 
 	private void calcUhr2Label() {
@@ -133,9 +126,9 @@ public class Stopuhr implements MenuInterface {
 		}
 
 		int minutesUhr1 = (int) (secondsUhr1 / 60);
-		String seconds = String.format("%.02f", secondsUhr1%60);
+		String seconds = String.format("%.02f", secondsUhr1 % 60);
 
-		uhr2.label = minutesUhr1 + "m " + seconds+" s";
+		uhr2.label = minutesUhr1 + "m " + seconds + " s";
 	}
 
 	private void resetClock(String clockName) {
@@ -143,9 +136,20 @@ public class Stopuhr implements MenuInterface {
 		Multiplayer.updateProp(clockName + propRunTime, 0);
 	}
 
-	private void pauseClock(String clockName, long runTime) {
-		Multiplayer.updateProp(clockName + propStopped, "true");
-		Multiplayer.updateProp(clockName + propRunTime, runTime);
+	private void pauseClock1() {
+		uhr1stopped = true;
+
+		Multiplayer.updateProp(uhr1Name + propStopped, "true");
+		Multiplayer.updateProp(uhr1Name + propRunTime, uhr1runTime);
+
+		updateClockTextures();
+	}
+
+	private void pauseClock2() {
+		uhr2stopped = true;
+
+		Multiplayer.updateProp(uhr2Name + propStopped, "true");
+		Multiplayer.updateProp(uhr2Name + propRunTime, uhr2runTime);
 
 		updateClockTextures();
 	}
@@ -191,7 +195,7 @@ public class Stopuhr implements MenuInterface {
 		} else {
 			uhr2runTime = (int) props.get(uhr2Name + propRunTime);
 		}
-		
+
 		updateClockTextures();
 	}
 

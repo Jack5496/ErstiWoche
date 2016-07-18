@@ -3,9 +3,10 @@ package com.erstiwoche.menu;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.TextInputListener;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.erstiwoche.helper.Auth;
 import com.erstiwoche.helper.Umlaute;
 import com.erstiwoche.multiplayer.Multiplayer;
 import com.erstiwoche.uiElements.GUIButton;
@@ -41,7 +42,7 @@ public class TeamView implements MenuInterface {
 			}
 		}
 
-		if (AdminMenu.isPlayerAdmin()) {
+		if (Auth.isPlayerAdmin()) {
 			buttons.add(deleteTeam);
 		}
 
@@ -51,16 +52,14 @@ public class TeamView implements MenuInterface {
 	}
 
 	@Override
-	public void render(SpriteBatch batch) {
-		for (GUIButton button : buttons) {
-			button.render(batch);
-		}
+	public void renderCall() {
+		MenuHandler.renderButtons(this,buttons);
 	}
 
 	public void enter() {
 		if (activButton != null) {
 			if (activButton == back) {
-				MenuHandler.setActivMenu(new ListeTeamsAuf());
+				MenuHandler.setActivMenu(new ListeTeamsAuf(),false);
 			}
 			if (activButton == deleteTeam) {
 				Gdx.input.getTextInput(new DeleteTeam(team),
@@ -85,9 +84,9 @@ public class TeamView implements MenuInterface {
 			if (!(text.equalsIgnoreCase("no") || text.equalsIgnoreCase("nein"))) {
 
 				if (Multiplayer.activRoom != null) {
-					MenuHandler.setActivMenu(Multiplayer.activRoom);
+					MenuHandler.setActivMenu(Multiplayer.activRoom,true);
 				} else {
-					MenuHandler.setActivMenu(new ListeTeamsAuf());
+					MenuHandler.setActivMenu(new ListeTeamsAuf(),true);
 				}
 
 				ListeTeamsAuf.deleteTeamEntrys(team);

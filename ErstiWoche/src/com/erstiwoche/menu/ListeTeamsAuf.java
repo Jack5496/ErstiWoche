@@ -1,6 +1,7 @@
 package com.erstiwoche.menu;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import org.json.JSONArray;
@@ -8,8 +9,9 @@ import org.json.JSONException;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.TextInputListener;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.erstiwoche.Main;
+import com.erstiwoche.entitys.Team;
+import com.erstiwoche.helper.Auth;
 import com.erstiwoche.helper.Umlaute;
 import com.erstiwoche.menu.TeamView.InputPoints;
 import com.erstiwoche.multiplayer.Multiplayer;
@@ -56,36 +58,59 @@ public class ListeTeamsAuf implements MenuInterface {
 		TeamView.updateButtons();
 	}
 
-	public static HashMap<GUIButton, String> teamButtons = new HashMap<GUIButton, String>();
-
+	public static HashMap<GUIButton, Team> teamButtons = new HashMap<GUIButton, Team>();
+	public static List<Team> teamEntitys = new ArrayList<Team>();
+	
 	public static void updateButtons() {
 		buttons = new ArrayList<GUIButton>();
-		teamButtons = new HashMap<GUIButton, String>();
+		teamButtons = new HashMap<GUIButton, Team>();
+		teamEntitys = new ArrayList<Team>();
 
+		String zusatzInfo = "";
+		if (Multiplayer.activRoom != null) {
+			zusatzInfo = "\n";
+		} else if (Auth.isPlayerAdmin()) {
+			zusatzInfo = "\nTotal: ";
+		} else{
+			zusatzInfo = "\nTotal: ";
+		}
+		
 		for (String team : teams) {
 
 			String teamName = Umlaute.rekonstruiere(team);
+			int points = 0;
+			
 
-			String zusatzInfo = "";
 			GUIButton b = new GUIButton(teamName, "teamError", 0, 0, 0, 0);
 			if (Multiplayer.activRoom != null) {
-				zusatzInfo = "\n" + getPoints(team) + " Punkte";
-				b = new GUIButton(teamName + zusatzInfo, "teamSetPoints", 0, 0, 0, 0);
-			} else if (AdminMenu.isPlayerAdmin()) {
-				zusatzInfo = "\nTotal: " + getTotalTeamPoints(team);
-				b = new GUIButton(teamName + zusatzInfo, "teamView", 0, 0, 0, 0);
+				points = getPoints(team);
+				b = new GUIButton(teamName, "teamSetPoints", 0, 0, 0, 0);
+			} else if (Auth.isPlayerAdmin()) {
+				points = getTotalTeamPoints(team);
+				b = new GUIButton(teamName, "teamView", 0, 0, 0, 0);
 			} else{
-				zusatzInfo = "\nTotal: " + getTotalTeamPoints(team);
-				b = new GUIButton(teamName + zusatzInfo, "team", 0, 0, 0, 0);
+				points = getTotalTeamPoints(team);
+				b = new GUIButton(teamName, "team", 0, 0, 0, 0);
 			}
-			teamButtons.put(b, team);
-			buttons.add(b);
+			Team t = new Team(team,teamName,points,b);
+			teamEntitys.add(t);
+			
+			teamButtons.put(b, t);
 		}
+		
+		Collections.sort(teamEntitys);
+		
+		int platz = 1;
+		for(Team t : teamEntitys){
+			t.b.label = "Nr."+platz+"\n"+t.b.label+zusatzInfo+t.points;
+			buttons.add(t.b);
+			platz++;
+		}		
 
 		buttons.add(back);
 
 		if (Multiplayer.activRoom == null) {
-			if (AdminMenu.isPlayerAdmin()) {
+			if (Auth.isPlayerAdmin()) {
 				buttons.add(addTeam);
 			}
 		}
@@ -118,19 +143,17 @@ public class ListeTeamsAuf implements MenuInterface {
 	}
 
 	@Override
-	public void render(SpriteBatch batch) {
-		for (GUIButton button : buttons) {
-			button.render(batch);
-		}
+	public void renderCall() {
+		MenuHandler.renderButtons(this,buttons);
 	}
 
 	public void enter() {
 		if (activButton != null) {
 			if (activButton == back) {
 				if (Multiplayer.activRoom != null) {
-					MenuHandler.setActivMenu(Multiplayer.activRoom);
+					MenuHandler.setActivMenu(Multiplayer.activRoom,false);
 				} else {
-					MenuHandler.setActivMenu(new MainMenu());
+					MenuHandler.setActivMenu(new MainMenu(),false);
 				}
 			} else if (activButton == addTeam) {
 				Gdx.input.getTextInput(new CreateTeam(), "Enter Team Name", "");
@@ -138,8 +161,8 @@ public class ListeTeamsAuf implements MenuInterface {
 				if (Multiplayer.activRoom != null) {
 					Gdx.input.getTextInput(new InputPoints(teamButtons.get(activButton) + Multiplayer.activRoom.name),
 							"Trage Punkte Ein", "");
-				} else if (AdminMenu.isPlayerAdmin()) {
-					MenuHandler.setActivMenu(new TeamView(teamButtons.get(activButton)));
+				} else if (Auth.isPlayerAdmin()) {
+					MenuHandler.setActivMenu(new TeamView(teamButtons.get(activButton).name),true);
 				}
 			}
 

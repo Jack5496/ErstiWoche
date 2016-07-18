@@ -47,7 +47,7 @@ public class LocalPlayerHandler {
 
 		@Override
 		public void canceled() {
-			MenuHandler.setActivMenu(new LoginWaitMenu());
+			MenuHandler.setActivMenu(new LoginWaitMenu(),false);
 			Main.getInstance().goOnlineRandomName();
 		}
 	}

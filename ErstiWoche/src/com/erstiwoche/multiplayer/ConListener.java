@@ -3,14 +3,11 @@ package com.erstiwoche.multiplayer;
 import com.erstiwoche.Main;
 import com.erstiwoche.entitys.LocalPlayer;
 import com.erstiwoche.entitys.LocalPlayerHandler;
-import com.erstiwoche.menu.AdminMenu;
 import com.erstiwoche.menu.LoginWaitMenu;
 import com.erstiwoche.menu.MainMenu;
 import com.erstiwoche.menu.MenuHandler;
-import com.erstiwoche.menu.Room;
 import com.shephertz.app42.gaming.multiplayer.client.command.WarpResponseResultCode;
 import com.shephertz.app42.gaming.multiplayer.client.events.ConnectEvent;
-import com.shephertz.app42.gaming.multiplayer.client.events.RoomData;
 import com.shephertz.app42.gaming.multiplayer.client.listener.ConnectionRequestListener;
 
 public class ConListener implements ConnectionRequestListener {
@@ -21,8 +18,7 @@ public class ConListener implements ConnectionRequestListener {
 
 		if (event.getResult() == WarpResponseResultCode.SUCCESS) {
 			LocalPlayerHandler.localPlayer = new LocalPlayer(LocalPlayerHandler.userNameWanted);
-			LocalPlayer player = LocalPlayerHandler.localPlayer;
-			MenuHandler.setActivMenu(new MainMenu());
+			MenuHandler.setActivMenu(new MainMenu(),true);
 		}
 		if (event.getResult() == WarpResponseResultCode.AUTH_ERROR) {
 			LoginWaitMenu.error("Auth Error");

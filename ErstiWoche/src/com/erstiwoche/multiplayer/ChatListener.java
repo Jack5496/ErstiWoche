@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.TextInputListener;
 import com.erstiwoche.Main;
 import com.erstiwoche.entitys.LocalPlayer;
-import com.shephertz.app42.gaming.multiplayer.client.WarpClient;
 import com.shephertz.app42.gaming.multiplayer.client.listener.ChatRequestListener;
 
 public class ChatListener implements ChatRequestListener {

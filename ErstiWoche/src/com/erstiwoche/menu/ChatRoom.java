@@ -1,20 +1,13 @@
 package com.erstiwoche.menu;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.TextInputListener;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.erstiwoche.Main;
-import com.erstiwoche.entitys.LocalPlayer;
-import com.erstiwoche.helper.Message;
+import com.erstiwoche.helper.Auth;
 import com.erstiwoche.multiplayer.Multiplayer;
 import com.erstiwoche.multiplayer.Notifications;
 import com.erstiwoche.uiElements.GUIButton;
-import com.shephertz.app42.gaming.multiplayer.client.events.RoomData;
 
 public class ChatRoom implements MenuInterface {
 
@@ -24,17 +17,17 @@ public class ChatRoom implements MenuInterface {
 
 	static GUIButton answer = new GUIButton("", "chat", 0, 0, 0, 0);
 	static GUIButton question = new GUIButton("", "student", 0, 0, 0, 0);
-	
+
 	public GUIButton chat = new GUIButton("Chat", "openChat", 0, 0, 0, 0);
-	
+
 	public static String QUESTIONTAG = "Q";
 	public static String ANSWERTAG = "A";
-	
+
 	public Room room;
 
 	public ChatRoom(Room room) {
 		this.room = room;
-		
+
 		buttons = new ArrayList<GUIButton>();
 
 		buttons.add(chat);
@@ -45,23 +38,20 @@ public class ChatRoom implements MenuInterface {
 	}
 
 	@Override
-	public void render(SpriteBatch batch) {
-		for (GUIButton button : buttons) {
-			button.render(batch);
-		}
+	public void renderCall() {
+		MenuHandler.renderButtons(this, buttons);
 	}
 
 	public static int maxMessagesToShow = 8;
-
 
 	public void enter() {
 		if (activButton != null) {
 			if (activButton == back) {
 				List<String> not = Notifications.changed.get(room.id);
-				if(not!=null){
+				if (not != null) {
 					not.remove(Notifications.CHATUPDATE);
 				}
-				MenuHandler.setActivMenu(room);
+				MenuHandler.setActivMenu(room, false);
 			}
 			if (activButton == chat) {
 				Gdx.input.getTextInput(new PrivateChatInput(), "Message", "");
@@ -73,12 +63,13 @@ public class ChatRoom implements MenuInterface {
 
 		@Override
 		public void input(String text) {
-			if (AdminMenu.isPlayerAdmin()) {
-				Multiplayer.updateProp(ANSWERTAG, ANSWERTAG+": " + text);
+			if (Auth.isPlayerAdmin()) {
+				Multiplayer.updateProp(ANSWERTAG, ANSWERTAG + ": " + text);
 			} else {
-				Multiplayer.updateProp(QUESTIONTAG, QUESTIONTAG+": " + text);
+				Multiplayer.updateProp(QUESTIONTAG, QUESTIONTAG + ": " + text);
 			}
-			Multiplayer.sendMessage(Notifications.SYSTEM+Notifications.REGEX+Notifications.UPDATE+Notifications.REGEX+Notifications.CHATUPDATE);
+			Multiplayer.sendMessage(Notifications.SYSTEM + Notifications.REGEX + Notifications.UPDATE
+					+ Notifications.REGEX + Notifications.CHATUPDATE);
 
 		}
 

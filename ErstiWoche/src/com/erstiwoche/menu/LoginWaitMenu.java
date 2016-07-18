@@ -2,7 +2,6 @@ package com.erstiwoche.menu;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.erstiwoche.uiElements.GUIButton;
 
 public class LoginWaitMenu implements MenuInterface {
@@ -22,11 +21,11 @@ public class LoginWaitMenu implements MenuInterface {
 	}
 
 	@Override
-	public void render(SpriteBatch batch) {
+	public void renderCall() {
 		for (GUIButton button : buttons) {
 			button.setDegree(getDegreeForTime());
-			button.render(batch);
 		}
+		MenuHandler.renderButtons(this,buttons);
 	}
 
 	public float getDegreeForTime() {
@@ -51,7 +50,7 @@ public class LoginWaitMenu implements MenuInterface {
 	public void enter() {
 		if (activButton != null) {
 			if (activButton == error) {
-				MenuHandler.setActivMenu(new LoginWaitMenu());
+				MenuHandler.setActivMenu(new LoginWaitMenu(),true);
 			}
 		}
 	}

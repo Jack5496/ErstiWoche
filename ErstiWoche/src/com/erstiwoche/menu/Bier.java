@@ -1,18 +1,11 @@
 package com.erstiwoche.menu;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
-
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.erstiwoche.Main;
-import com.erstiwoche.entitys.LocalPlayer;
-import com.erstiwoche.helper.Message;
+import com.erstiwoche.helper.Auth;
 import com.erstiwoche.multiplayer.Multiplayer;
 import com.erstiwoche.multiplayer.Notifications;
 import com.erstiwoche.uiElements.GUIButton;
-import com.shephertz.app42.gaming.multiplayer.client.events.RoomData;
 
 public class Bier implements MenuInterface {
 
@@ -36,7 +29,7 @@ public class Bier implements MenuInterface {
 		buttons.add(zuViel);
 		buttons.add(genug);
 
-		if (AdminMenu.isPlayerAdmin()) {
+		if (Auth.isPlayerAdmin()) {
 			buttons.add(aufdemWeg);
 		}
 
@@ -47,10 +40,8 @@ public class Bier implements MenuInterface {
 	
 
 	@Override
-	public void render(SpriteBatch batch) {
-		for (GUIButton button : buttons) {
-			button.render(batch);
-		}
+	public void renderCall() {
+		MenuHandler.renderButtons(this,buttons);
 	}
 
 	public void enter() {
@@ -60,11 +51,11 @@ public class Bier implements MenuInterface {
 				if(not!=null){
 					not.remove(Notifications.BIERUPDATE);
 				}
-				MenuHandler.setActivMenu(room);
+				MenuHandler.setActivMenu(room,false);
 			}
 			else{
 				Multiplayer.updateProp(getClass().getSimpleName(), activButton.label);
-				MenuHandler.setActivMenu(Multiplayer.activRoom);
+				MenuHandler.setActivMenu(Multiplayer.activRoom,true);
 				Multiplayer.sendMessage(Notifications.SYSTEM+Notifications.REGEX+Notifications.UPDATE+Notifications.REGEX+Notifications.BIERUPDATE);
 			}
 		}

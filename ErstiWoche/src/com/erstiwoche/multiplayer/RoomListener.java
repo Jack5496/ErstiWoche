@@ -33,19 +33,21 @@ public class RoomListener implements RoomRequestListener {
 				if (prop != null) {
 					room.updateProperties(arg0.getData().getId(), prop);
 				}
-			} 
+			}
 		}
 	}
 
 	public void updateTeamListPropertie(LiveRoomInfoEvent arg0) {
-		if (arg0.getData().getId().equals(Multiplayer.teamViewID)) {
-			ListeTeamsAuf.recieveTeamListProperties(arg0.getProperties());
+		if (arg0.getData() != null) {
+			if (arg0.getData().getId().equals(Multiplayer.teamViewID)) {
+				ListeTeamsAuf.recieveTeamListProperties(arg0.getProperties());
+			}
 		}
 	}
-	
-	public void joinRoomDone(RoomEvent event){
+
+	public void joinRoomDone(RoomEvent event) {
 		Multiplayer.activRoom = new Room(event.getData());
-		MenuHandler.setActivMenu(Multiplayer.activRoom);
+		MenuHandler.setActivMenu(Multiplayer.activRoom, true);
 	}
 
 	@Override
@@ -105,8 +107,8 @@ public class RoomListener implements RoomRequestListener {
 
 	@Override
 	public void onUpdatePropertyDone(LiveRoomInfoEvent arg0) {
-		Main.log(getClass(), LocalPlayerHandler.localPlayer.name+": onUpdatePropertyDone");
-		
+		Main.log(getClass(), LocalPlayerHandler.localPlayer.name + ": onUpdatePropertyDone");
+
 		updateTeamListPropertie(arg0);
 
 		HashMap<String, Object> prop = arg0.getProperties();

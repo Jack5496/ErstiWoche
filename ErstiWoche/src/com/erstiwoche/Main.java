@@ -4,9 +4,6 @@ import java.util.UUID;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -15,9 +12,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.erstiwoche.Inputs.InputHandler;
 import com.erstiwoche.entitys.LocalPlayerHandler;
 import com.erstiwoche.menu.MenuHandler;
-import com.erstiwoche.menu.Room;
 import com.erstiwoche.multiplayer.Multiplayer;
-import com.shephertz.app42.gaming.multiplayer.client.events.RoomData;
 
 public class Main implements ApplicationListener {
 
@@ -48,7 +43,7 @@ public class Main implements ApplicationListener {
 
 		initInputHandler();
 
-		menuHandler = new MenuHandler();
+		menuHandler = new MenuHandler(batch);
 		onlineConnector = new Multiplayer();
 		goOnlineRandomName();
 	}
@@ -71,10 +66,7 @@ public class Main implements ApplicationListener {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		batch.begin();
-		MenuHandler.render(batch);
-		batch.end();
-
+		MenuHandler.render();
 	}
 
 	public static void log(Class<?> c, String log) {
@@ -97,6 +89,7 @@ public class Main implements ApplicationListener {
 		this.height = height;
 		this.width = width;
 		batch = new SpriteBatch();
+		MenuHandler.batch = batch;
 	}
 
 	@Override

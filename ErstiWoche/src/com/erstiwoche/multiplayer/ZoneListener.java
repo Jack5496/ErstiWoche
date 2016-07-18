@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.erstiwoche.Main;
-import com.erstiwoche.menu.AdminMenu;
 import com.erstiwoche.menu.MainMenu;
 import com.shephertz.app42.gaming.multiplayer.client.events.AllRoomsEvent;
 import com.shephertz.app42.gaming.multiplayer.client.events.AllUsersEvent;

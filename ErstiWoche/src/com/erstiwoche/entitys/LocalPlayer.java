@@ -1,8 +1,5 @@
 package com.erstiwoche.entitys;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class LocalPlayer{
 
 	public String name;

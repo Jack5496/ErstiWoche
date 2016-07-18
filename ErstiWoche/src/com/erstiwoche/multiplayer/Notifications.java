@@ -5,12 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.erstiwoche.Main;
-import com.erstiwoche.entitys.LocalPlayer;
+import com.erstiwoche.SoundHandler;
 import com.erstiwoche.helper.Message;
-import com.erstiwoche.menu.Bier;
 import com.erstiwoche.menu.ChatRoom;
-import com.erstiwoche.menu.MainMenu;
-import com.erstiwoche.menu.Room;
 import com.shephertz.app42.gaming.multiplayer.client.events.ChatEvent;
 import com.shephertz.app42.gaming.multiplayer.client.events.LobbyData;
 import com.shephertz.app42.gaming.multiplayer.client.events.MoveEvent;
@@ -63,6 +60,7 @@ public class Notifications implements NotifyListener {
 			}
 			if(!changes.contains(functions[2])){
 				changes.add(functions[2]);
+				SoundHandler.playUpdateSound();
 			}
 			
 			changed.put(m.getRoomID(), changes);

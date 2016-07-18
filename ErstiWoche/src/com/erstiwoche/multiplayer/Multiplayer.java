@@ -3,7 +3,6 @@ package com.erstiwoche.multiplayer;
 import java.util.HashMap;
 import java.util.List;
 
-import com.erstiwoche.Main;
 import com.erstiwoche.entitys.LocalPlayer;
 import com.erstiwoche.entitys.LocalPlayerHandler;
 import com.erstiwoche.helper.Message;

@@ -4,13 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.erstiwoche.Main;
-import com.erstiwoche.ResourceLoader;
 import com.erstiwoche.entitys.LocalPlayer;
-import com.erstiwoche.helper.Message;
 import com.erstiwoche.multiplayer.Multiplayer;
 import com.erstiwoche.multiplayer.Notifications;
 import com.erstiwoche.uiElements.GUIButton;
@@ -68,7 +63,7 @@ public class Room implements MenuInterface {
 	}
 
 	@Override
-	public void render(SpriteBatch batch) {
+	public void renderCall() {
 		if (Notifications.changed.get(id) != null) {
 			if (Notifications.changed.get(id).contains(Notifications.BIERUPDATE)) {
 				bier.setChange(true);
@@ -78,9 +73,7 @@ public class Room implements MenuInterface {
 			}
 		}
 
-		for (GUIButton button : buttons) {
-			button.render(batch);
-		}
+		MenuHandler.renderButtons(this,buttons);
 
 		bier.setChange(false);
 		chat.setChange(false);
@@ -112,19 +105,19 @@ public class Room implements MenuInterface {
 					Notifications.changed.remove(id);
 				}
 				Multiplayer.leaveRoom();
-				MenuHandler.setActivMenu(new MainMenu());
+				MenuHandler.setActivMenu(new MainMenu(),false);
 			}
 			if (activButton == chat) {
-				MenuHandler.setActivMenu(new ChatRoom(this));
+				MenuHandler.setActivMenu(new ChatRoom(this),true);
 			}
 			if (activButton == bier) {
-				MenuHandler.setActivMenu(new Bier(this));
+				MenuHandler.setActivMenu(new Bier(this),true);
 			}
 			if (activButton == stopuhr) {
-				MenuHandler.setActivMenu(new Stopuhr(this));
+				MenuHandler.setActivMenu(new Stopuhr(this),true);
 			}
 			if (activButton == giveTeamPoints) {
-				MenuHandler.setActivMenu(new ListeTeamsAuf());
+				MenuHandler.setActivMenu(new ListeTeamsAuf(),true);
 			}
 
 		}

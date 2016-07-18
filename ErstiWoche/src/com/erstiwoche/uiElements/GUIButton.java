@@ -18,7 +18,10 @@ public class GUIButton extends Button {
 
 	boolean hoverd;
 	boolean change;
-
+	
+	public float offsetPercentX;
+	public float offsetPercentY;
+	
 	public float centerPercentX;
 	public float centerPercentY;
 	public float percentWidth;
@@ -37,6 +40,8 @@ public class GUIButton extends Button {
 	public GUIButton(String label, String buttonName, float centerPercentX, float centerPercentY, float percentWidth,
 			float percentHeight) {
 		this.label = label;
+		this.offsetPercentX = 0;
+		this.offsetPercentY = 0;
 		this.centerPercentX = centerPercentX;
 		this.centerPercentY = centerPercentY;
 		this.percentWidth = percentWidth;
@@ -79,8 +84,8 @@ public class GUIButton extends Button {
 	public float degreeRotation = 0;
 
 	public void render(SpriteBatch batch) {
-		float xpos = (Main.getInstance().getWidth() * centerPercentX / 100);
-		float ypos = (Main.getInstance().getHeight() * centerPercentY / 100);
+		float xpos = (Main.getInstance().getWidth() * (centerPercentX+offsetPercentX) / 100);
+		float ypos = (Main.getInstance().getHeight() * (centerPercentY+offsetPercentY) / 100);
 		float width = ((float) Main.getInstance().getWidth() * percentWidth / 100);
 		float height = ((float) Main.getInstance().getHeight() * percentHeight / 100);
 
@@ -141,13 +146,17 @@ public class GUIButton extends Button {
 			labelCopy = labelCopy.substring(index + 1);
 			index = labelCopy.indexOf("\n");
 		}
+		
+		if(newLines>0){
+			newLines++;
+		}
 
 		return 2 * labelHeight + newLines * labelHeight;
 	}
 
 	public void drawLabel(SpriteBatch batch) {
-		float xpos = (Main.getInstance().getWidth() * centerPercentX / 100);
-		float ypos = (Main.getInstance().getHeight() * centerPercentY / 100);
+		float xpos = (Main.getInstance().getWidth() * (centerPercentX+offsetPercentX) / 100);
+		float ypos = (Main.getInstance().getHeight() * (centerPercentY+offsetPercentY) / 100);
 		float height = ((float) Main.getInstance().getHeight() * percentHeight / 100);
 
 		String label = recalcLabelIfTooLong();
@@ -168,7 +177,9 @@ public class GUIButton extends Button {
 			index = labelCopy.indexOf("\n");
 		}
 
-		// float yoffset = (labelHeight / 2);
+		if(newLines>0){
+			newLines++;
+		}
 
 		font.drawMultiLine(batch, label, xpos, ypos - height / 2 + 2 * labelHeight + newLines * labelHeight, 0,
 				alignment);
