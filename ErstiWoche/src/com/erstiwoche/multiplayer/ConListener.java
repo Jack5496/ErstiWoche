@@ -19,6 +19,7 @@ public class ConListener implements ConnectionRequestListener {
 		if (event.getResult() == WarpResponseResultCode.SUCCESS) {
 			LocalPlayerHandler.localPlayer = new LocalPlayer(LocalPlayerHandler.userNameWanted);
 			MenuHandler.setActivMenu(new MainMenu(),true);
+			Multiplayer.joinLobby();
 		}
 		if (event.getResult() == WarpResponseResultCode.AUTH_ERROR) {
 			LoginWaitMenu.error("Auth Error");

@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="libs/gdx-natives.jar"/>
 	<classpathentry kind="lib" path="libs/java-json.jar"/>
 	<classpathentry kind="lib" path="/ErstiWoche/libs/gdx.jar" sourcepath="/ErstiWoche/libs/gdx-sources.jar"/>
+	<classpathentry kind="lib" path="libs/jl1.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

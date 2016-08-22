@@ -15,6 +15,8 @@ public class GUIButton extends Button {
 	static {
 		font.setColor(Color.BLACK);
 	}
+	
+	private String str= "Hallo";
 
 	boolean hoverd;
 	boolean change;

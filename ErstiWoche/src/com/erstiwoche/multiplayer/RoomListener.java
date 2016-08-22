@@ -17,24 +17,10 @@ public class RoomListener implements RoomRequestListener {
 	@Override
 	public void onGetLiveRoomInfoDone(LiveRoomInfoEvent arg0) {
 		// TODO Auto-generated method stub
-		Main.log(getClass(), "onGetLiveRoomInfoDone");
+//		Main.log(getClass(), "onGetLiveRoomInfoDone");
 
-		MainMenu.roomNameRecieved(arg0.getData().getId(), arg0.getData().getName());
+		MainMenu.updateRoomInformation(arg0);
 		updateTeamListPropertie(arg0);
-
-		Room room = Multiplayer.activRoom;
-
-		if (room != null) {
-			if (room.id.equals(arg0.getData().getId())) {
-				if (arg0.getJoinedUsers() != null) {
-					room.setJoinedUsers(arg0.getJoinedUsers());
-				}
-				HashMap<String, Object> prop = arg0.getProperties();
-				if (prop != null) {
-					room.updateProperties(arg0.getData().getId(), prop);
-				}
-			}
-		}
 	}
 
 	public void updateTeamListPropertie(LiveRoomInfoEvent arg0) {
@@ -46,7 +32,8 @@ public class RoomListener implements RoomRequestListener {
 	}
 
 	public void joinRoomDone(RoomEvent event) {
-		Multiplayer.activRoom = new Room(event.getData());
+		Multiplayer.activRoom = MainMenu.rooms.get(event.getData().getId());
+		Multiplayer.updateRoomInformations(event.getData().getId());
 		MenuHandler.setActivMenu(Multiplayer.activRoom, true);
 	}
 
@@ -59,7 +46,7 @@ public class RoomListener implements RoomRequestListener {
 	@Override
 	public void onJoinRoomDone(RoomEvent arg0) {
 		// TODO Auto-generated method stub
-		Main.log(getClass(), "onJoinRoomDone");
+//		Main.log(getClass(), "onJoinRoomDone");
 		joinRoomDone(arg0);
 	}
 
@@ -107,18 +94,8 @@ public class RoomListener implements RoomRequestListener {
 
 	@Override
 	public void onUpdatePropertyDone(LiveRoomInfoEvent arg0) {
-		Main.log(getClass(), LocalPlayerHandler.localPlayer.name + ": onUpdatePropertyDone");
-
-		updateTeamListPropertie(arg0);
-
-		HashMap<String, Object> prop = arg0.getProperties();
-		Room room = Multiplayer.activRoom;
-
-		if (room != null) {
-			if (prop != null) {
-				room.updateProperties(arg0.getData().getId(), prop);
-			}
-		}
+//		updateTeamListPropertie(arg0);
+		MainMenu.updateRoomInformation(arg0);
 	}
 
 }

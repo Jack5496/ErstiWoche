@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.erstiwoche.Main;
 import com.erstiwoche.SoundHandler;
+import com.erstiwoche.entitys.LocalPlayerHandler;
 import com.erstiwoche.helper.Message;
 import com.erstiwoche.menu.ChatRoom;
 import com.shephertz.app42.gaming.multiplayer.client.events.ChatEvent;
@@ -23,8 +24,10 @@ public class Notifications implements NotifyListener {
 	public static String UPDATE = "UPDATE";
 	public static String SYSTEM = "GAME";
 	public static String REGEX = " ";
-	
+
+	public static String STATUSUPDATE = "STATUSUPDATE";
 	public static String BIERUPDATE = "BIERUPDATE";
+	public static String TEAMERUPDATE = "TEAMERUPDATE";
 	public static String CHATUPDATE = "CHATUPDATE";
 
 	public Notifications() {
@@ -45,8 +48,8 @@ public class Notifications implements NotifyListener {
 		}
 		messages.add(m);
 	}
-	
-	public static HashMap<String,List<String>> changed = new HashMap<String,List<String>>();
+
+	public static HashMap<String, List<String>> changed = new HashMap<String, List<String>>();
 
 	public void systemMessage(Message m) {
 		String[] functions = m.getMessage().split(REGEX);
@@ -54,17 +57,27 @@ public class Notifications implements NotifyListener {
 		String what = functions[1];
 
 		if (what.equals(UPDATE)) {
-			List<String> changes = changed.get(m.getRoomID());
-			if(changes==null){
-				changes = new ArrayList<String>();
+			if (m.getRoomID().equals("0")) {
+				Multiplayer.updateRoomInformations(functions[2]);
+			} else {
+				List<String> changes = changed.get(m.getRoomID());
+				if (changes == null) {
+					changes = new ArrayList<String>();
+				}
+				changed.put(m.getRoomID(), changes);
 			}
-			if(!changes.contains(functions[2])){
-				changes.add(functions[2]);
-				SoundHandler.playUpdateSound();
-			}
-			
-			changed.put(m.getRoomID(), changes);
 		}
+	}
+	
+	public static void addChange(String roomID, String change){
+		List<String> changes = changed.get(roomID);
+		if (changes == null) {
+			changes = new ArrayList<String>();
+		}
+		if (!changes.contains(change)) {
+			changes.add(change);
+		}
+		changed.put(roomID, changes);
 	}
 
 	public boolean isSystemMessage(String message) {
@@ -73,7 +86,7 @@ public class Notifications implements NotifyListener {
 
 	@Override
 	public void onChatReceived(ChatEvent arg0) {
-		Main.log(getClass(), "onChatReceived");
+//		Main.log(getClass(), "onChatReceived");
 		Message m = new Message(arg0);
 		if (isSystemMessage(m.getMessage())) {
 			systemMessage(m);
@@ -140,19 +153,18 @@ public class Notifications implements NotifyListener {
 		// TODO Auto-generated method stub
 		Main.log(getClass(), "onUpdatePeersReceived");
 	}
-	
 
 	@Override
 	public void onUserChangeRoomProperty(RoomData arg0, String arg1, HashMap<String, Object> arg2,
 			HashMap<String, String> arg3) {
-		// TODO Auto-generated method stub		
+		// TODO Auto-generated method stub
 		Multiplayer.updateRoomInfromations();
 	}
 
 	@Override
 	public void onUserJoinedLobby(LobbyData arg0, String arg1) {
 		// TODO Auto-generated method stub
-		Main.log(getClass(), "onUserJoinedLobby");
+		// Main.log(getClass(), "onUserJoinedLobby");
 	}
 
 	@Override

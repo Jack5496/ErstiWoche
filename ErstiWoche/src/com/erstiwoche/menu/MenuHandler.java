@@ -36,8 +36,10 @@ public class MenuHandler {
 			activMenu.renderCall();
 		} else {
 			calcTransitPercent();
-			lastMenu.renderCall();
-			nextMenu.renderCall();
+			if (lastMenu != null)
+				lastMenu.renderCall();
+			if (nextMenu != null)
+				nextMenu.renderCall();
 			checkTransitEnd();
 		}
 	}
@@ -98,7 +100,7 @@ public class MenuHandler {
 		float part1 = (float) (max / (1f + c * Math.pow(Math.E, k * percent)));
 
 		transitPercent = part1 / 100f;
-		
+
 		if (transitPercent > 0.99f) {
 			transitPercent = 1;
 		}

@@ -1,5 +1,6 @@
 package com.erstiwoche;
 
+import java.io.File;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
@@ -29,9 +30,8 @@ public class ResourceLoader {
 
 	public static String buttons = data + "buttons/";
 
-	public Texture getButton(String name) {
+	public Texture getButton(String name) {		
 		if (!textures.containsKey(name)) {
-			Main.log(getClass(), name);
 			Texture texture = new Texture(Gdx.files.internal(buttons + name + ".png"));
 			textures.put(name, texture);
 		}

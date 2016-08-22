@@ -13,6 +13,7 @@ import com.erstiwoche.helper.Umlaute;
 import com.erstiwoche.multiplayer.Multiplayer;
 import com.erstiwoche.multiplayer.Notifications;
 import com.erstiwoche.uiElements.GUIButton;
+import com.shephertz.app42.gaming.multiplayer.client.events.LiveRoomInfoEvent;
 
 public class MainMenu implements MenuInterface {
 
@@ -21,11 +22,14 @@ public class MainMenu implements MenuInterface {
 	static GUIButton teamViewButton;
 	static GUIButton logout;
 	static GUIButton broadcast;
+	static GUIButton rateApp;
 
 	static HashMap<String, GUIButton> roomButtons;
+	public static HashMap<String, Room> rooms;
 
 	public MainMenu() {
 		roomButtons = new HashMap<String, GUIButton>();
+		rooms = new HashMap<String, Room>();
 
 		Multiplayer.getAllRooms();
 	}
@@ -35,7 +39,7 @@ public class MainMenu implements MenuInterface {
 
 		roomIDs.remove(Multiplayer.teamViewID);
 
-		int buttonAmount = roomIDs.size() + 2;
+		int buttonAmount = roomIDs.size() + 3;
 		if (Auth.isPlayerAdmin()) {
 			buttonAmount += 1;
 		}
@@ -64,11 +68,15 @@ public class MainMenu implements MenuInterface {
 
 			}
 			if (Auth.isPlayerAdmin()) {
-				if (buttonAmount - 3 == i) {
+				if (buttonAmount - 4 == i) {
 					broadcast = new GUIButton("Broadcast", "broadcast", xpos, ypos, width, height)
 							.setOnHoverBigger(true);
 					roomButtons.put(broadcast.label, broadcast);
 				}
+			}
+			if (buttonAmount - 3 == i) {
+				rateApp = new GUIButton("Like it?", "like", xpos, ypos, width, height).setOnHoverBigger(true);
+				roomButtons.put(rateApp.label, rateApp);
 			}
 			if (buttonAmount - 2 == i) {
 				teamViewButton = new GUIButton("Team View", "listTeams", xpos, ypos, width, height)
@@ -88,13 +96,34 @@ public class MainMenu implements MenuInterface {
 		}
 	}
 
-	public static void roomNameRecieved(String id, String name) {
-		if (!id.equals(Multiplayer.teamViewID)) {
-			GUIButton button = roomButtons.get(id);
-			if (button != null) {
-				button.label = Umlaute.rekonstruiere(name);
-				button.texture = "station";
+	public static void updateRoomInformation(LiveRoomInfoEvent arg0) {
+		if (arg0.getData() != null) {
+			Room room = rooms.get(arg0.getData().getId());
+			if (room == null) {
+				rooms.put(arg0.getData().getId(), new Room(arg0.getData()));
+				room = rooms.get(arg0.getData().getId());
+			}
 
+			if (arg0.getJoinedUsers() != null) {
+				room.setJoinedUsers(arg0.getJoinedUsers());
+			}
+			HashMap<String, Object> prop = arg0.getProperties();
+			if (prop != null) {
+				room.updateProperties(prop);
+
+			}
+
+			String roomID = arg0.getData().getId();
+			String roomName = arg0.getData().getName();
+
+			if (!roomID.equals(Multiplayer.teamViewID)) {
+				GUIButton button = roomButtons.get(roomID);
+				if (button != null) {
+					Main.log(MainMenu.class, "Update: " + room.getRoomStatus());
+					button.label = Umlaute.rekonstruiere(roomName);
+					button.texture = room.getRoomStatus();
+					room.roomStatus.texture = button.texture;
+				}
 			}
 		}
 	}
@@ -137,6 +166,8 @@ public class MainMenu implements MenuInterface {
 			} else if (activButton == logout) {
 				Multiplayer.goOffline();
 				Main.getInstance().goOnlineRandomName();
+			} else if (activButton == rateApp) {
+				Main.extensions.openURL(Main.appURL);
 			} else if (activButton == broadcast) {
 				Gdx.input.getTextInput(new BroadCastInput(), "Broadcast Message", "");
 			} else {
@@ -152,22 +183,23 @@ public class MainMenu implements MenuInterface {
 			}
 		}
 	}
-	
+
 	public class BroadCastInput implements TextInputListener {
 
 		@Override
 		public void input(String text) {
 			for (String roomID : MainMenu.roomButtons.keySet()) {
-				Multiplayer.updateProp(roomID,ChatRoom.ANSWERTAG, ChatRoom.ANSWERTAG + ": " + text);
-				Multiplayer.sendMessage(Notifications.SYSTEM + Notifications.REGEX + Notifications.UPDATE
-						+ Notifications.REGEX + Notifications.CHATUPDATE);
+				Multiplayer.updateProp(roomID, ChatRoom.ANSWERTAG, ChatRoom.ANSWERTAG + ": " + text);
 			}
+//			Multiplayer.sendMessage(Notifications.SYSTEM + Notifications.REGEX + Notifications.UPDATE
+//					+ Notifications.REGEX + Notifications.CHATUPDATE);
 		}
 
 		@Override
 		public void canceled() {
 
 		}
+
 	}
 
 	@Override

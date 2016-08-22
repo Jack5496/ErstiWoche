@@ -1,6 +1,7 @@
 package com.erstiwoche.menu;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.TextInputListener;
@@ -50,6 +51,7 @@ public class ChatRoom implements MenuInterface {
 				List<String> not = Notifications.changed.get(room.id);
 				if (not != null) {
 					not.remove(Notifications.CHATUPDATE);
+					Notifications.changed.put(room.id, not);
 				}
 				MenuHandler.setActivMenu(room, false);
 			}
@@ -77,6 +79,24 @@ public class ChatRoom implements MenuInterface {
 		public void canceled() {
 
 		}
+	}
+
+	public static boolean somethingCahnged(HashMap<String, Object> oldProps, HashMap<String, Object> newProps) {
+
+		boolean change = false;
+
+		if (oldProps != null && newProps != null) {
+			if (oldProps.get(ANSWERTAG) != null && newProps.get(ANSWERTAG) != null) {
+				if (!oldProps.get(ANSWERTAG).equals(newProps.get(ANSWERTAG)))
+					change = true;
+			}
+			if (oldProps.get(QUESTIONTAG) != null && newProps.get(QUESTIONTAG) != null) {
+				if (!oldProps.get(QUESTIONTAG).equals(newProps.get(QUESTIONTAG)))
+					change = true;
+			}
+		}
+
+		return change;
 	}
 
 	@Override

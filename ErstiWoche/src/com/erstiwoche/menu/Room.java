@@ -1,10 +1,13 @@
 package com.erstiwoche.menu;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import com.erstiwoche.Main;
+import com.erstiwoche.SoundHandler;
 import com.erstiwoche.entitys.LocalPlayer;
 import com.erstiwoche.multiplayer.Multiplayer;
 import com.erstiwoche.multiplayer.Notifications;
@@ -23,14 +26,24 @@ public class Room implements MenuInterface {
 	GUIButton activButton;
 
 	public List<LocalPlayer> players;
-
-	GUIButton giveTeamPoints = new GUIButton("Give Team Points", "setPoints", 80, 80, 20, 20).setOnHoverBigger(true);
-	GUIButton bier = new GUIButton(Bier.class.getSimpleName(), "bier", 80, 80, 20, 20).setOnHoverBigger(true);
-	GUIButton chat = new GUIButton("Chat Room", "chat", 70, 15, 20, 20).setOnHoverBigger(true);	
-	GUIButton stopuhr = new GUIButton("Stopuhr", "stopuhr", 70, 15, 20, 20).setOnHoverBigger(true);
 	
-	GUIButton roomName;
-	GUIButton back = new GUIButton("Leave", "exit", 30, 15, 20, 20).setOnHoverBigger(true);
+	static HashMap<String,String> buttonLabelText = new HashMap<String,String>();
+	static{
+		buttonLabelText.put(Bier.zuWenig.label, Bier.zuWenig.texture);
+		buttonLabelText.put(Bier.zuViel.label, Bier.zuViel.texture);
+		buttonLabelText.put(Bier.genug.label, Bier.genug.texture);
+		buttonLabelText.put(Bier.aufdemWeg.label, Bier.aufdemWeg.texture);
+	}
+
+	GUIButton giveTeamPoints = new GUIButton("Give Team Points", "setPoints", 0, 0, 0, 0).setOnHoverBigger(true);
+	GUIButton bier = new GUIButton(Bier.class.getSimpleName(), "bier", 0, 0, 0, 0).setOnHoverBigger(true);
+	GUIButton chat = new GUIButton("Chat Room", "chat", 0, 0, 0, 0).setOnHoverBigger(true);
+	GUIButton stopuhr = new GUIButton("Stopuhr", "stopuhr", 0, 0, 0, 0).setOnHoverBigger(true);
+	GUIButton teamer = new GUIButton("Teamer", "teamerGenug", 0, 0, 0, 0).setOnHoverBigger(true);
+
+	public GUIButton roomStatus = new GUIButton("Station:\n" + name, getRoomStatus(), 0, 0, 0, 0)
+			.setOnHoverBigger(true);
+	GUIButton back = new GUIButton("Leave", "exit", 0, 0, 0, 0).setOnHoverBigger(true);
 
 	public Room(RoomData data) {
 		buttons = new ArrayList<GUIButton>();
@@ -38,15 +51,15 @@ public class Room implements MenuInterface {
 		porperties = new HashMap<String, Object>();
 
 		roomInformationsFound(data);
-		roomName = new GUIButton("Station:\n"+name, "station", 80, 80, 20, 20).setOnHoverBigger(true);
 		Multiplayer.updateRoomInformations(id);
 
 		buttons.add(chat);
 		buttons.add(bier);
 		buttons.add(giveTeamPoints);
 		buttons.add(stopuhr);
+		buttons.add(teamer);
 
-		buttons.add(roomName);
+		buttons.add(roomStatus);
 		buttons.add(back);
 		buttons = MenuHandler.setButtonPositions(buttons);
 	}
@@ -58,6 +71,7 @@ public class Room implements MenuInterface {
 	public void roomInformationsFound(RoomData data) {
 		this.id = data.getId();
 		this.name = data.getName();
+		roomStatus.label = "Station:\n" + name;
 		this.ownerName = data.getRoomOwner();
 		this.maxUser = data.getMaxUsers();
 	}
@@ -73,7 +87,7 @@ public class Room implements MenuInterface {
 			}
 		}
 
-		MenuHandler.renderButtons(this,buttons);
+		MenuHandler.renderButtons(this, buttons);
 
 		bier.setChange(false);
 		chat.setChange(false);
@@ -102,22 +116,28 @@ public class Room implements MenuInterface {
 		if (activButton != null) {
 			if (activButton == back) {
 				if (Notifications.changed.get(id) != null) {
-					Notifications.changed.remove(id);
+					Notifications.changed.put(id, null);
 				}
 				Multiplayer.leaveRoom();
-				MenuHandler.setActivMenu(new MainMenu(),false);
+				MenuHandler.setActivMenu(new MainMenu(), false);
+			}
+			if (activButton == roomStatus) {
+				MenuHandler.setActivMenu(new Status(this), true);
 			}
 			if (activButton == chat) {
-				MenuHandler.setActivMenu(new ChatRoom(this),true);
+				MenuHandler.setActivMenu(new ChatRoom(this), true);
 			}
 			if (activButton == bier) {
-				MenuHandler.setActivMenu(new Bier(this),true);
+				MenuHandler.setActivMenu(new Bier(this), true);
+			}
+			if (activButton == teamer) {
+				MenuHandler.setActivMenu(new Teamer(this), true);
 			}
 			if (activButton == stopuhr) {
-				MenuHandler.setActivMenu(new Stopuhr(this),true);
+				MenuHandler.setActivMenu(new Stopuhr(this), true);
 			}
 			if (activButton == giveTeamPoints) {
-				MenuHandler.setActivMenu(new ListeTeamsAuf(),true);
+				MenuHandler.setActivMenu(new ListeTeamsAuf(), true);
 			}
 
 		}
@@ -125,20 +145,39 @@ public class Room implements MenuInterface {
 
 	public static HashMap<String, Object> props = new HashMap<String, Object>();
 
-	public void updateProperties(String string, HashMap<String, Object> properties) {
-		if (string.equals(Multiplayer.activRoom.id)) {
-			props = properties;
-
-			ChatRoom.answer.label = "" + props.get(ChatRoom.ANSWERTAG);
-			ChatRoom.question.label = "" + props.get(ChatRoom.QUESTIONTAG);
-
-			bier.label = Bier.class.getSimpleName() + "Status: \n" + props.get(Bier.class.getSimpleName());
-			
-			Stopuhr.updateClocks(props);
-		} else if (string.equals(Multiplayer.teamViewID)) {
-			Main.log(getClass(), "New Properties found");
-			Main.log(getClass(), properties.toString());
+	public void updateProperties(HashMap<String, Object> properties) {
+		
+		if(ChatRoom.somethingCahnged(props, properties)){
+			SoundHandler.playUpdateSound();
+			Notifications.addChange(id, Notifications.CHATUPDATE);
 		}
+		
+		if(Bier.somethingCahnged(props, properties)){
+			SoundHandler.playUpdateSound();
+			Notifications.addChange(id, Notifications.BIERUPDATE);
+		}
+
+		props = properties;
+		
+		ChatRoom.answer.label = "" + props.get(ChatRoom.ANSWERTAG);
+		ChatRoom.question.label = "" + props.get(ChatRoom.QUESTIONTAG);
+
+		bier.label = Bier.class.getSimpleName() + "Status: \n" + props.get(Bier.class.getSimpleName());
+		bier.texture = buttonLabelText.get(props.get(Bier.class.getSimpleName()));
+		
+		teamer.label = Teamer.class.getSimpleName() + "Status: \n" + props.get(Teamer.class.getSimpleName());
+
+		Stopuhr.updateClocks(id, props);
+	}
+
+	public String getRoomStatus() {
+		String statusTexture = (String) props.get(Status.class.getSimpleName());
+		if (statusTexture == null) {
+			Multiplayer.updateProp(id, Status.class.getSimpleName(), Status.offen.texture);
+			return Status.offen.texture;
+		}
+
+		return statusTexture;
 	}
 
 	@Override

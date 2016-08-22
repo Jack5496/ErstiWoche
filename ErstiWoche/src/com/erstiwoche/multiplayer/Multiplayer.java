@@ -14,7 +14,7 @@ public class Multiplayer {
 	private static WarpClient warpClient = null;
 
 	private static ChatListener chatListener;
-	
+
 	public static String teamViewID = "18196153";
 
 	public static Room activRoom;
@@ -52,25 +52,37 @@ public class Multiplayer {
 	}
 
 	public static void joinRoom(String roomID) {
-			warpClient.joinAndSubscribeRoom(roomID);
+		warpClient.joinAndSubscribeRoom(roomID);
 	}
 
 	public static void getAllRooms() {
 		warpClient.getAllRooms();
 	}
-	
-	public static void updateRoomInfromations(){
-		if(Multiplayer.activRoom!=null){
+
+	public static void updateRoomInfromations() {
+		if (Multiplayer.activRoom != null) {
 			updateRoomInformations(activRoom.id);
 		}
 	}
-	
-	public static void subcribeRoom(String roomID){
+
+	public static void subcribeRoom(String roomID) {
 		warpClient.subscribeRoom(roomID);
 	}
 
 	public static void updateRoomInformations(String roomID) {
 		warpClient.getLiveRoomInfo(roomID);
+	}
+
+	public static void joinLobby() {
+		warpClient.joinLobby();
+		warpClient.subscribeLobby();
+	}
+
+	public static void updateRoomStatus() {
+		if (Multiplayer.activRoom != null) {
+			warpClient.sendChat(Notifications.SYSTEM + Notifications.REGEX + Notifications.UPDATE + Notifications.REGEX
+					+ Multiplayer.activRoom.id);
+		}
 	}
 
 	/**
@@ -92,18 +104,18 @@ public class Multiplayer {
 		Notifications.addMessage(new Message(LocalPlayerHandler.localPlayer.name, Multiplayer.activRoom.id, message));
 		warpClient.sendPrivateChat(p.name, "PRIVAT: " + message);
 	}
-	
-	public static void updateProp(String type, Object value){
-		updateProp(Multiplayer.activRoom.id,type,value);
+
+	public static void updateProp(String type, Object value) {
+		updateProp(Multiplayer.activRoom.id, type, value);
 	}
-	
-	public static void updateProp(String roomID, String type, Object value){
-		HashMap<String,Object> table = new HashMap<String,Object>();
+
+	public static void updateProp(String roomID, String type, Object value) {
+		HashMap<String, Object> table = new HashMap<String, Object>();
 		table.put(type, value);
 		warpClient.updateRoomProperties(roomID, table, null);
 	}
-	
-	public static void deleteProp(String roomID, List<String> keys){
+
+	public static void deleteProp(String roomID, List<String> keys) {
 		warpClient.updateRoomProperties(roomID, null, keys.toArray(new String[0]));
 	}
 

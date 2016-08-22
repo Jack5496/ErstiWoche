@@ -11,12 +11,15 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.erstiwoche.Inputs.InputHandler;
 import com.erstiwoche.entitys.LocalPlayerHandler;
+import com.erstiwoche.helper.Extensions;
 import com.erstiwoche.menu.MenuHandler;
 import com.erstiwoche.multiplayer.Multiplayer;
 
 public class Main implements ApplicationListener {
 
 	public static final String gameTitle = "Ersti Woche";
+	
+	public static final String appURL = "http://s2.quickmeme.com/img/6c/6cbb922bfd9b1e179315f1d626ec7d7745430692e8b8c237cf477464129e0c50.jpg";
 
 	SpriteBatch batch;
 	BitmapFont font;
@@ -31,6 +34,12 @@ public class Main implements ApplicationListener {
 	public MenuHandler menuHandler;
 
 	ResourceLoader loader;
+	
+	public static Extensions extensions;
+	
+	public Main(Extensions extensions){
+		Main.extensions = extensions;
+	}
 
 	@Override
 	public void create() {

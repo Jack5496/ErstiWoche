@@ -168,30 +168,30 @@ public class Stopuhr implements MenuInterface {
 		updateClockTextures();
 	}
 
-	public static void updateClocks(HashMap<String, Object> props) {
+	public static void updateClocks(String id, HashMap<String, Object> props) {
 		uhr1stopped = ("" + props.get(uhr1Name + propStopped)).equals("true");
 		uhr2stopped = ("" + props.get(uhr2Name + propStopped)).equals("true");
 
 		if (props.get(uhr1Name + propStart) == null) {
-			Multiplayer.updateProp(uhr1Name + propStart, System.currentTimeMillis());
+			Multiplayer.updateProp(id,uhr1Name + propStart, System.currentTimeMillis());
 		} else {
 			uhr1StartTime = (long) props.get(uhr1Name + propStart);
 		}
 
 		if (props.get(uhr2Name + propStart) == null) {
-			Multiplayer.updateProp(uhr2Name + propStart, System.currentTimeMillis());
+			Multiplayer.updateProp(id,uhr2Name + propStart, System.currentTimeMillis());
 		} else {
 			uhr2StartTime = (long) props.get(uhr2Name + propStart);
 		}
 
 		if (props.get(uhr1Name + propRunTime) == null) {
-			Multiplayer.updateProp(uhr1Name + propRunTime, 0L);
+			Multiplayer.updateProp(id,uhr1Name + propRunTime, 0L);
 		} else {
 			uhr1runTime = (int) props.get(uhr1Name + propRunTime);
 		}
 
 		if (props.get(uhr2Name + propRunTime) == null) {
-			Multiplayer.updateProp(uhr2Name + propRunTime, 0L);
+			Multiplayer.updateProp(id,uhr2Name + propRunTime, 0L);
 		} else {
 			uhr2runTime = (int) props.get(uhr2Name + propRunTime);
 		}
